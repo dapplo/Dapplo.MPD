@@ -42,7 +42,7 @@ namespace Dapplo.MPD
 		/// <param name="hostname"></param>
 		/// <param name="port"></param>
 		/// <returns>Task too await</returns>
-		private async Task InitAsync(string hostname, int port)
+		protected async Task InitAsync(string hostname, int port)
 		{
 			_tcpClient = new TcpClient();
 			await _tcpClient.ConnectAsync(hostname, port).ConfigureAwait(false);

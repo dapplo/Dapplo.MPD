@@ -27,6 +27,17 @@ namespace Dapplo.MPD.Tests
 		}
 
 		[TestMethod]
+		public async Task TestStatusAsync()
+		{
+			using (var client = await MpdClient.CreateAsync("n40l", 6600))
+			{
+				var status = await client.Status();
+				Assert.IsNotNull(status.Audioformat);
+				Assert.AreEqual("44100:24:2", status.Audioformat);
+			}
+		}
+
+		[TestMethod]
 		public async Task TestIdleAsync()
 		{
 			var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(1));
