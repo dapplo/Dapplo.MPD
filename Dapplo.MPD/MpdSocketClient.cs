@@ -56,7 +56,7 @@ namespace Dapplo.MPD
 		}
 
 		/// <summary>
-		/// Send a command, and read a response
+		/// Wait for a response
 		/// </summary>
 		/// <returns>MpdResponse</returns>
 		private async Task<MpdResponse> ReadResponseAsync()
@@ -75,7 +75,7 @@ namespace Dapplo.MPD
 		}
 
 		/// <summary>
-		/// Write the line, as a command, and read a response
+		/// Send a command to the server, and await the response
 		/// </summary>
 		/// <param name="command"></param>
 		/// <returns>MpdResponse</returns>
