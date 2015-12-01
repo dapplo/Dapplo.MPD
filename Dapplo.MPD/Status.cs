@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace Dapplo.MPD
+namespace Dapplo.MPD.Client
 {
 	/// <summary>
 	/// This object represents the MPD current status
 	/// </summary>
-	public class MpdStatus
+	public class Status
 	{
 		/// <summary>
 		/// Volume in MPD, -1 means there is no volume control

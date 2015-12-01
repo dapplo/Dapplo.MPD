@@ -54,9 +54,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Dapplo.MPD\Dapplo.MPD.csproj">
+    <ProjectReference Include="..\Dapplo.MPD\Dapplo.MPD.Client.csproj">
       <Project>{a2aa5383-1658-4292-b1ea-a8b487822c16}</Project>
-      <Name>Dapplo.MPD</Name>
+      <Name>Dapplo.MPD.Client</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

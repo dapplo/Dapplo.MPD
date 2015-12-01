@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace Dapplo.MPD
+namespace Dapplo.MPD.Client
 {
 	/// <summary>
 	/// This is the MpdClient which has high-level commands
@@ -23,14 +23,26 @@ namespace Dapplo.MPD
 		}
 
 		/// <summary>
-		/// Get the status of the MPD
+		/// Get the replay gain status
+		/// </summary>
+		/// <returns>ReplayGainModes</returns>
+		public async Task<ReplayGainModes> ReplayGainStatusAsync()
+		{
+			var response = await SendCommandAsync("replay_gain_status");
+			ReplayGainModes replayGainMode;
+			Enum.TryParse(response.ResponseLines[0], true, out replayGainMode);
+			return replayGainMode;
+		}
+
+		/// <summary>
+		/// Get the status
 		/// </summary>
 		/// <returns>MpdStatus</returns>
-		public async Task<MpdStatus> Status()
+		public async Task<Status> StatusAsync()
 		{
 			var response = await SendCommandAsync("status");
-			var status = new MpdStatus();
-			foreach (var statusEntry in response.Response)
+			var status = new Status();
+			foreach (var statusEntry in response.ResponseLines)
 			{
 				var nameValue = statusEntry.Split(new[] { ':' }, 2);
 				var name = nameValue[0];
@@ -119,6 +131,225 @@ namespace Dapplo.MPD
 				}
 			}
 			return status;
+		}
+
+		/// <summary>
+		/// Get the current song information
+		/// </summary>
+		/// <returns>CurrentSong</returns>
+		public async Task<CurrentSong> CurrentSongAsync()
+		{
+			var response = await SendCommandAsync("currentsong");
+			var currentSong = new CurrentSong();
+			foreach (var statusEntry in response.ResponseLines)
+			{
+				var nameValue = statusEntry.Split(new[] { ':' }, 2);
+				var name = nameValue[0];
+				var value = nameValue[1].Trim();
+				switch (name)
+				{
+					case "file":
+						currentSong.File = value;
+						break;
+					case "Title":
+						currentSong.Title = value;
+						break;
+					case "Name":
+						currentSong.Name = value;
+						break;
+					case "Pos":
+						int pos;
+						int.TryParse(value, out pos);
+						currentSong.Pos = pos;
+						break;
+					case "Id":
+						int id;
+						int.TryParse(value, out id);
+						currentSong.Id = id;
+						break;
+					default:
+						Debug.WriteLine($"Unprocessed current song info: {nameValue[0]}");
+						break;
+				}
+			}
+			return currentSong;
+		}
+
+		/// <summary>
+		/// When consume is activated, each song played is removed from playlist.
+		/// </summary>
+		/// <param name="enable">true to enable, false to disable</param>
+		public async Task ConsumeAsync(bool enable)
+		{
+			await SendCommandAsync("consume", Convert.ToInt32(enable).ToString());
+		}
+
+		/// <summary>
+		/// Sets crossfading between songs
+		/// </summary>
+		/// <param name="seconds"></param>
+		public async Task CrossfadeAsync(int seconds)
+		{
+			await SendCommandAsync("crossfade", seconds.ToString());
+		}
+
+		/// <summary>
+		/// Additional time subtracted from the overlap calculated by mixrampdb.
+		/// A value of lt 0 is converted to "nan" and disables MixRamp overlapping and falls back to crossfading.
+		/// </summary>
+		/// <param name="seconds"></param>
+		public async Task MixRampDelayAsync(int seconds)
+		{
+			if (seconds >= 0)
+			{
+				await SendCommandAsync("mixrampdelay", seconds.ToString());
+			}
+			else
+			{
+				await SendCommandAsync("mixrampdelay", "nan");
+			}
+		}
+
+		/// <summary>
+		/// Sets the threshold at which songs will be overlapped.
+		/// Like crossfading but doesn't fade the track volume, just overlaps.
+		/// The songs need to have MixRamp tags added by an external tool.
+		/// 0dB is the normalized maximum volume so use negative values.
+		/// In the absence of mixramp tags crossfading will be used.
+		/// See http://sourceforge.net/projects/mixramp
+		/// </summary>
+		/// <param name="deciBels">bis 0</param>
+		public async Task MixRampDbAsync(int deciBels)
+		{
+			await SendCommandAsync("mixrampdb", deciBels.ToString());
+		}
+
+		/// <summary>
+		/// Enable or disable random
+		/// </summary>
+		/// <param name="enable">true to enable, false to disable</param>
+		public async Task RandomAsync(bool enable)
+		{
+			await SendCommandAsync("random", Convert.ToInt32(enable).ToString());
+		}
+
+		/// <summary>
+		/// Enable or disable repeat
+		/// </summary>
+		/// <param name="enable">true to enable, false to disable</param>
+		public async Task RepeatAsync(bool enable)
+		{
+			await SendCommandAsync("repeat", Convert.ToInt32(enable).ToString());
+		}
+
+		/// <summary>
+		/// When single is activated, playback is stopped after current song, or song is repeated if the 'repeat' mode is enabled.
+		/// </summary>
+		/// <param name="enable">true to enable, false to disable</param>
+		public async Task SingleAsync(bool enable)
+		{
+			await SendCommandAsync("single", Convert.ToInt32(enable).ToString());
+		}
+
+		/// <summary>
+		/// Sets the volume
+		/// </summary>
+		/// <param name="volume">0-100</param>
+		public async Task VolumeAsync(int volume)
+		{
+			await SendCommandAsync("setvol", volume.ToString());
+		}
+
+		/// <summary>
+		/// Sets the replay gain mode. One of off, track, album, auto[5].
+		/// Changing the mode during playback may take several seconds, because the new settings does not affect the buffered data.
+		/// This command triggers the options idle event.
+		/// </summary>
+		/// <param name="replayGainMode">replay gain mode</param>
+		public async Task ReplayGainModeAsync(ReplayGainModes replayGainMode)
+		{
+			await SendCommandAsync("replay_gain_mode ", replayGainMode.ToString().ToLowerInvariant());
+		}
+
+		/// <summary>
+		/// Next song
+		/// </summary>
+		public async Task NextAsync()
+		{
+			await SendCommandAsync("next");
+		}
+
+		/// <summary>
+		/// Toggles pause/resumes playing,
+		/// </summary>
+		/// <param name="resume">true to resume, false to pause</param>
+		public async Task PauseAsync(bool resume)
+		{
+			await SendCommandAsync("pause", Convert.ToInt32(resume).ToString());
+		}
+
+		/// <summary>
+		/// Previous song
+		/// </summary>
+		public async Task PreviousAsync()
+		{
+			await SendCommandAsync("previous");
+		}
+
+		/// <summary>
+		/// Stop
+		/// </summary>
+		public async Task StopAsync()
+		{
+			await SendCommandAsync("stop");
+		}
+
+		/// <summary>
+		/// Begins playing the playlist at song number songpos.
+		/// </summary>
+		/// <param name="songpos"></param>
+		public async Task PlayAsync(int songpos)
+		{
+			await SendCommandAsync("play", songpos.ToString());
+		}
+
+		/// <summary>
+		/// Begins playing the playlist at song songid.
+		/// </summary>
+		/// <param name="songId"></param>
+		public async Task PlayIdAsync(int songId)
+		{
+			await SendCommandAsync("playid", songId.ToString());
+		}
+
+		/// <summary>
+		/// Seeks to the position TIME (in seconds; fractions allowed) of entry song-pos in the playlist.
+		/// </summary>
+		/// <param name="songPos"></param>
+		/// <param name="timeSpan"></param>
+		public async Task SeekAsync(int songPos, TimeSpan timeSpan)
+		{
+			await SendCommandAsync("seek", songPos.ToString(), timeSpan.TotalSeconds.ToString("F3"));
+        }
+
+		/// <summary>
+		/// Seeks to the position TIME (in seconds; fractions allowed) of song-id.
+		/// </summary>
+		/// <param name="songId"></param>
+		/// <param name="timeSpan"></param>
+		public async Task SeekIdAsync(int songId, TimeSpan timeSpan)
+		{
+			await SendCommandAsync("seekid", songId.ToString(), timeSpan.TotalSeconds.ToString("F3"));
+		}
+
+		/// <summary>
+		/// Seeks to the position TIME (in seconds; fractions allowed) within the current song.
+		/// Timespan can be negative.
+		/// </summary>
+		/// <param name="timeSpan"></param>
+		public async Task SeekCurAsync(TimeSpan timeSpan)
+		{
+			await SendCommandAsync("seekcur", timeSpan.TotalSeconds.ToString("F3"));
 		}
 	}
 }

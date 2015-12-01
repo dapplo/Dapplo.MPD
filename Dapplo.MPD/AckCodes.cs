@@ -1,4 +1,4 @@
-﻿namespace Dapplo.MPD
+﻿namespace Dapplo.MPD.Client
 {
 	public enum AckCodes
 	{

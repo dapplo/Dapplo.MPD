@@ -3,6 +3,7 @@ using System.Linq;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Dapplo.MPD.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Dapplo.MPD.Tests
@@ -16,7 +17,7 @@ namespace Dapplo.MPD.Tests
 			using (var client = await MpdSocketClient.CreateAsync("n40l", 6600))
 			{
 				var status = await client.SendCommandAsync("status");
-				status.Response.ToList().ForEach(x => Debug.WriteLine(x));
+				status.ResponseLines.ToList().ForEach(x => Debug.WriteLine(x));
 
 				Assert.IsTrue(status.IsOk);
 
@@ -31,7 +32,7 @@ namespace Dapplo.MPD.Tests
 		{
 			using (var client = await MpdClient.CreateAsync("n40l", 6600))
 			{
-				var status = await client.Status();
+				var status = await client.StatusAsync();
 				Assert.IsNotNull(status.Audioformat);
 				Assert.AreEqual("44100:24:2", status.Audioformat);
 			}

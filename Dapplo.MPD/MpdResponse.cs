@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace Dapplo.MPD
+namespace Dapplo.MPD.Client
 {
 	public class MpdResponse
 	{
@@ -23,7 +23,7 @@ namespace Dapplo.MPD
 				var responseLine = line.Replace(Ok, "");
 				if (!string.IsNullOrEmpty(responseLine))
 				{
-					Response.Add(responseLine);
+					ResponseLines.Add(responseLine);
 				}
 				return true;
 			}
@@ -39,11 +39,11 @@ namespace Dapplo.MPD
 				}
 				return true;
 			}
-			Response.Add(line);
+			ResponseLines.Add(line);
 			return false;
 		}
 
-		public IList<string> Response
+		public IList<string> ResponseLines
 		{
 			get;
 		} = new List<string>();

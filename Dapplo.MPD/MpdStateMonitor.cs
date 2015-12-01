@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Dapplo.MPD
+namespace Dapplo.MPD.Client
 {
 	/// <summary>
 	/// Handler of the StateChanged event
@@ -55,14 +55,14 @@ namespace Dapplo.MPD
 		{
 			_mpdSocketClient = await MpdSocketClient.CreateAsync(hostname, port);
 			// ReSharper disable once UnusedVariable
-			var ignoringTask = BackgroundChecker();
+			var ignoringTask = BackgroundCheckerAsync();
 		}
 
 		/// <summary>
 		/// This is the main loop
 		/// </summary>
 		/// <returns>Task which can be ignored</returns>
-		private async Task BackgroundChecker()
+		private async Task BackgroundCheckerAsync()
 		{
 			do
 			{
@@ -72,7 +72,7 @@ namespace Dapplo.MPD
 					// TODO: Output response error message
 					continue;
 				}
-				var subSystemString = response.Response[0].Replace("changed: ", "");
+				var subSystemString = response.ResponseLines[0].Replace("changed: ", "");
 				SubSystems subSystem;
 				if (Enum.TryParse(subSystemString.Replace("_", ""), true, out subSystem))
 				{

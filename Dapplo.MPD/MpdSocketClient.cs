@@ -4,7 +4,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Dapplo.MPD
+namespace Dapplo.MPD.Client
 {
 	/// <summary>
 	/// A simple low level client to connect to a MPD server
@@ -52,7 +52,7 @@ namespace Dapplo.MPD
 			{
 				throw new Exception(mpdResponse.ErrorMessage);
 			}
-			Version = mpdResponse.Response[0];
+			Version = mpdResponse.ResponseLines[0];
 		}
 
 		/// <summary>
@@ -78,10 +78,19 @@ namespace Dapplo.MPD
 		/// Send a command to the server, and await the response
 		/// </summary>
 		/// <param name="command"></param>
+		/// <param name="arguments"></param>
 		/// <returns>MpdResponse</returns>
-		public async Task<MpdResponse> SendCommandAsync(string command)
+		public async Task<MpdResponse> SendCommandAsync(string command, params string[] arguments)
 		{
-			var buffer = Encoding.UTF8.GetBytes($"{command}\n");
+			var commandline = new StringBuilder(command);
+			if (arguments != null)
+			{
+				foreach (var argument in arguments)
+				{
+					commandline.Append($" {argument}");
+				}
+			}
+			var buffer = Encoding.UTF8.GetBytes($"{commandline}\n");
 			await _networkStream.WriteAsync(buffer, 0, buffer.Length);
 
 			return await ReadResponseAsync().ConfigureAwait(false);

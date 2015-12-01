@@ -1,4 +1,4 @@
-namespace Dapplo.MPD
+namespace Dapplo.MPD.Client
 {
 	/// <summary>
 	/// This is the list of the sub systems that the MPD has and can notify about when using the idle command
