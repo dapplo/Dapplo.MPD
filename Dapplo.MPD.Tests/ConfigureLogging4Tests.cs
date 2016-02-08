@@ -21,36 +21,22 @@
 	along with Dapplo.MPD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Dapplo.MPD.Client
+using Dapplo.LogFacade;
+using Dapplo.LogFacade.Loggers;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace Dapplo.MPD.Tests
 {
 	/// <summary>
-	/// This object represents the MPD current song
+	/// This initializes the logger for all tests
 	/// </summary>
-	public class CurrentSong
+	[TestClass]
+	public class ConfigureLogging4Tests
 	{
-		/// <summary>
-		/// Id of song
-		/// </summary>
-		public int Id { get; set;}
-
-		/// <summary>
-		/// Position
-		/// </summary>
-		public int Pos { get; set; }
-
-		/// <summary>
-		/// Title of song
-		/// </summary>
-		public string Title { get; set; }
-
-		/// <summary>
-		/// Name of current entry
-		/// </summary>
-		public string Name { get; set; }
-
-		/// <summary>
-		/// Uri of the file
-		/// </summary>
-		public string File { get; set; }
+		[AssemblyInitialize]
+		public static void ConfigureLogging(TestContext context)
+		{
+			LogSettings.Logger = new TraceLogger { Level = LogLevel.Verbose };
+		}
 	}
 }

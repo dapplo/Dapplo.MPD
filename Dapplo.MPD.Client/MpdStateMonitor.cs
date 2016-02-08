@@ -1,6 +1,30 @@
-﻿using System;
+﻿/*
+	Dapplo - building blocks for desktop applications
+	Copyright (C) 2015-2016 Dapplo
+
+	For more information see: http://dapplo.net/
+	Dapplo repositories are hosted on GitHub: https://github.com/dapplo
+
+	This file is part of Dapplo.MPD
+
+	Dapplo.MPD is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	Dapplo.MPD is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with Dapplo.MPD. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Dapplo.LogFacade;
 
 namespace Dapplo.MPD.Client
 {
@@ -28,6 +52,7 @@ namespace Dapplo.MPD.Client
 	/// </summary>
 	public class MpdStateMonitor : IDisposable
 	{
+		private static readonly LogSource Log = new LogSource();
 		private MpdSocketClient _mpdSocketClient;
 		private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         public event MpdStateChangedHandler StateChanged;
@@ -54,6 +79,7 @@ namespace Dapplo.MPD.Client
 		private async Task InitAsync(string hostname, int port)
 		{
 			_mpdSocketClient = await MpdSocketClient.CreateAsync(hostname, port);
+			// TODO: store in member variable to prevent GC?
 			// ReSharper disable once UnusedVariable
 			var ignoringTask = BackgroundCheckerAsync();
 		}
@@ -69,7 +95,7 @@ namespace Dapplo.MPD.Client
 				var response = await _mpdSocketClient.SendCommandAsync("idle");
 				if (!response.IsOk)
 				{
-					// TODO: Output response error message
+					Log.Error().WriteLine("Error response: {0}", string.Join(Environment.NewLine, response.ResponseLines));
 					continue;
 				}
 				var subSystemString = response.ResponseLines[0].Replace("changed: ", "");
