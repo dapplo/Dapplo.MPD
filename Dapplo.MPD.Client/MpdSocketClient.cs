@@ -28,7 +28,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using Dapplo.LogFacade;
+using Dapplo.Log.Facade;
 using Zeroconf;
 
 namespace Dapplo.MPD.Client

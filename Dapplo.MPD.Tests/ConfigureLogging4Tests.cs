@@ -21,8 +21,8 @@
 	along with Dapplo.MPD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using Dapplo.LogFacade;
-using Dapplo.LogFacade.Loggers;
+using Dapplo.Log.Facade;
+using Dapplo.Log.Loggers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Dapplo.MPD.Tests
@@ -36,7 +36,7 @@ namespace Dapplo.MPD.Tests
 		[AssemblyInitialize]
 		public static void ConfigureLogging(TestContext context)
 		{
-			LogSettings.Logger = new TraceLogger { Level = LogLevel.Verbose };
+			LogSettings.RegisterDefaultLogger<TraceLogger>(LogLevels.Verbose);
 		}
 	}
 }

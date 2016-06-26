@@ -23,7 +23,7 @@
 
 using System.Linq;
 using System.Threading.Tasks;
-using Dapplo.LogFacade;
+using Dapplo.Log.Facade;
 using Dapplo.MPD.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
