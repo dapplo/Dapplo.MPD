@@ -1,32 +1,10 @@
-﻿//  Dapplo - building blocks for desktop applications
-//  Copyright (C) 2016 Dapplo
-// 
-//  For more information see: http://dapplo.net/
-//  Dapplo repositories are hosted on GitHub: https://github.com/dapplo
-// 
-//  This file is part of Dapplo.MPD
-// 
-//  Dapplo.MPD is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU Lesser General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-// 
-//  Dapplo.MPD is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU Lesser General Public License for more details.
-// 
-//  You should have a copy of the GNU Lesser General Public License
-//  along with Dapplo.MPD. If not, see <http://www.gnu.org/licenses/lgpl.txt>.
-
-#region using
+﻿// Copyright (c) Dapplo and contributors. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Dapplo.Log.Facade;
-
-#endregion
+using Dapplo.Log;
 
 namespace Dapplo.MPD.Client
 {
@@ -106,8 +84,6 @@ namespace Dapplo.MPD.Client
 
 		public event MpdStateChangedHandler StateChanged;
 
-		#region IDisposable Support
-
 		private bool _disposedValue; // To detect redundant calls
 
 		protected virtual void Dispose(bool disposing)
@@ -131,7 +107,5 @@ namespace Dapplo.MPD.Client
 			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
 			Dispose(true);
 		}
-
-		#endregion
 	}
 }
